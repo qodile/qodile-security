@@ -1,9 +1,9 @@
 <?php
 
-namespace Xyo\WordpressSecurity\Admin;
+namespace Qodile\Security\Admin;
 
 /**
- * Settings screen (Settings → Xyo Security) that turns each hardening feature
+ * Settings screen (Settings → Qodile Security) that turns each hardening feature
  * on/off. State lives in a single array option, read through isEnabled() which
  * the bootstrap uses to decide whether to wire each Action. Built on the native
  * WordPress Settings API (nonce + sanitisation handled by core).
@@ -13,15 +13,15 @@ namespace Xyo\WordpressSecurity\Admin;
  */
 class Settings
 {
-    const OPTION = 'xyo_security_settings';
-    const GROUP  = 'xyo_security';
-    const PAGE   = 'xyo-security';
+    const OPTION = 'qodile_security_settings';
+    const GROUP  = 'qodile_security';
+    const PAGE   = 'qodile-security';
 
     /** Option sub-key holding the admin-editable public REST route prefixes. */
     const REST_PREFIXES_KEY = 'rest_public_prefixes';
 
     /** Initial, editable public REST prefixes (shown until an admin changes them). */
-    const DEFAULT_REST_PREFIXES = ['/xyo/', '/bee/', '/contact-form-7/'];
+    const DEFAULT_REST_PREFIXES = [];
 
     /** @var array<string,mixed>|null in-request cache of the whole option */
     private static $options = null;
@@ -59,38 +59,38 @@ class Settings
 
         return [
             'cleanup' => [
-                __('Clean <head> & disable XML-RPC', 'xyo-security'),
-                __('Remove generator, RSD, WLW manifest, feeds, shortlink and asset version strings; disable XML-RPC.', 'xyo-security'),
+                __('Clean <head> & disable XML-RPC', 'qodile-security'),
+                __('Remove generator, RSD, WLW manifest, feeds, shortlink and asset version strings; disable XML-RPC.', 'qodile-security'),
                 $defaults['cleanup'],
             ],
             'rest_lock' => [
-                __('Lock the REST API', 'xyo-security'),
-                __('Restrict the REST API to authenticated users. Public routes (favorites slider, Contact Form 7, oEmbed) stay open.', 'xyo-security'),
+                __('Lock the REST API', 'qodile-security'),
+                __('Restrict the REST API to authenticated users. Public routes stay open (oEmbed, plus the prefixes listed below).', 'qodile-security'),
                 $defaults['rest_lock'],
             ],
             'integrity' => [
-                __('File integrity monitoring', 'xyo-security'),
-                __('Hash core, plugins, mu-plugins and the active theme once a day and alert (e-mail, log, admin notice) on any added, changed or removed executable file.', 'xyo-security'),
+                __('File integrity monitoring', 'qodile-security'),
+                __('Hash core, plugins, mu-plugins and the active theme once a day and alert (e-mail, log, admin notice) on any added, changed or removed executable file.', 'qodile-security'),
                 $defaults['integrity'],
             ],
             'headers' => [
-                __('Security headers', 'xyo-security'),
-                __('Send hardened HTTP headers (X-Frame-Options, Referrer-Policy, Permissions-Policy…) and mask X-Powered-By.', 'xyo-security'),
+                __('Security headers', 'qodile-security'),
+                __('Send hardened HTTP headers (X-Frame-Options, Referrer-Policy, Permissions-Policy…) and mask X-Powered-By.', 'qodile-security'),
                 $defaults['headers'],
             ],
             'yoast' => [
-                __('Tame Yoast', 'xyo-security'),
-                __('Strip Yoast HTML comments, force robots index/follow and exclude authors from the sitemap.', 'xyo-security'),
+                __('Tame Yoast', 'qodile-security'),
+                __('Strip Yoast HTML comments, force robots index/follow and exclude authors from the sitemap.', 'qodile-security'),
                 $defaults['yoast'],
             ],
             'login_errors' => [
-                __('Generic login errors', 'xyo-security'),
-                __('Hide whether the username or the password was wrong on failed logins.', 'xyo-security'),
+                __('Generic login errors', 'qodile-security'),
+                __('Hide whether the username or the password was wrong on failed logins.', 'qodile-security'),
                 $defaults['login_errors'],
             ],
             'admin_footer' => [
-                __('Admin footer credit', 'xyo-security'),
-                __('Show the "Cleaned by xyo" note in the wp-admin footer.', 'xyo-security'),
+                __('Admin footer credit', 'qodile-security'),
+                __('Show the "Cleaned by xyo" note in the wp-admin footer.', 'qodile-security'),
                 $defaults['admin_footer'],
             ],
         ];
@@ -170,8 +170,8 @@ class Settings
     public static function registerMenu(): void
     {
         add_options_page(
-            __('Xyo Security', 'xyo-security'),
-            __('Xyo Security', 'xyo-security'),
+            __('Qodile Security', 'qodile-security'),
+            __('Qodile Security', 'qodile-security'),
             'manage_options',
             self::PAGE,
             [self::class, 'renderPage']
@@ -187,8 +187,8 @@ class Settings
         ]);
 
         add_settings_section(
-            'xyo_security_main',
-            __('Features', 'xyo-security'),
+            'qodile_security_main',
+            __('Features', 'qodile-security'),
             [self::class, 'renderSectionIntro'],
             self::PAGE
         );
@@ -199,17 +199,17 @@ class Settings
                 $feature[0],
                 [self::class, 'renderField'],
                 self::PAGE,
-                'xyo_security_main',
+                'qodile_security_main',
                 ['key' => $key, 'desc' => $feature[1], 'label_for' => self::OPTION . '_' . $key]
             );
         }
 
         add_settings_field(
             self::REST_PREFIXES_KEY,
-            __('Public REST routes', 'xyo-security'),
+            __('Public REST routes', 'qodile-security'),
             [self::class, 'renderPrefixesField'],
             self::PAGE,
-            'xyo_security_main',
+            'qodile_security_main',
             ['label_for' => self::OPTION . '_' . self::REST_PREFIXES_KEY]
         );
     }
@@ -234,7 +234,7 @@ class Settings
 
     public static function renderSectionIntro(): void
     {
-        echo '<p>' . esc_html__('Toggle each hardening feature. All are on by default.', 'xyo-security') . '</p>';
+        echo '<p>' . esc_html__('Toggle each hardening feature. All are on by default.', 'qodile-security') . '</p>';
     }
 
     /**
@@ -265,7 +265,7 @@ class Settings
             esc_textarea(implode("\n", self::restPublicPrefixes()))
         );
         echo '<p class="description">' .
-            esc_html__('One route prefix per line (e.g. /xyo/). Used only when "Lock the REST API" is on. /oembed/ is always allowed.', 'xyo-security') .
+            esc_html__('One route prefix per line (e.g. /contact-form-7/). Used only when "Lock the REST API" is on. /oembed/ is always allowed.', 'qodile-security') .
             '</p>';
     }
 
@@ -276,7 +276,7 @@ class Settings
         }
         ?>
         <div class="wrap">
-            <h1><?php echo esc_html__('Xyo Security', 'xyo-security'); ?></h1>
+            <h1><?php echo esc_html__('Qodile Security', 'qodile-security'); ?></h1>
             <form action="options.php" method="post">
                 <?php
                 settings_fields(self::GROUP);
@@ -286,11 +286,11 @@ class Settings
             </form>
             <?php
             /**
-             * Fires after the settings form on the Xyo Security page. Features
+             * Fires after the settings form on the Qodile Security page. Features
              * (e.g. file integrity monitoring) hook here to add their own tools,
              * keeping this screen agnostic of individual features.
              */
-            do_action('xyo_security_after_settings_form');
+            do_action('qodile_security_after_settings_form');
             ?>
         </div>
         <?php
@@ -305,7 +305,7 @@ class Settings
     public static function actionLinks($links): array
     {
         $url = admin_url('options-general.php?page=' . self::PAGE);
-        array_unshift($links, '<a href="' . esc_url($url) . '">' . esc_html__('Settings', 'xyo-security') . '</a>');
+        array_unshift($links, '<a href="' . esc_url($url) . '">' . esc_html__('Settings', 'qodile-security') . '</a>');
 
         return $links;
     }

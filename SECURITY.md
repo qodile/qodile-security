@@ -1,4 +1,6 @@
-# Security Policy — Xyo Security
+# Security Policy — Qodile Security
+
+Plugin website: <https://qodile.com/plugins/security>
 
 ## Supported versions
 
@@ -26,7 +28,7 @@ This plugin hardens a WordPress site (head cleanup, HTTP headers, REST API lock,
 generic login errors, file integrity monitoring). It is a defence-in-depth layer,
 not a guarantee against compromise. Reports about the plugin's own behaviour —
 for example a bypass of the REST lock, a flaw in the integrity scanner, or data
-exposure in `wp-content/uploads/xyo-security/` — are especially welcome.
+exposure in `wp-content/uploads/qodile-security/` — are especially welcome.
 
 ## Our commitments
 
@@ -37,7 +39,9 @@ exposure in `wp-content/uploads/xyo-security/` — are especially welcome.
 
 ---
 
-# Politique de sécurité — Xyo Security
+# Politique de sécurité — Qodile Security
+
+Site du plugin : <https://qodile.com/plugins/security>
 
 ## Signaler une vulnérabilité
 

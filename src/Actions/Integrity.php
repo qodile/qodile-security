@@ -1,11 +1,11 @@
 <?php
 
-namespace Xyo\WordpressSecurity\Actions;
+namespace Qodile\Security\Actions;
 
 use RecursiveCallbackFilterIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use Xyo\WordpressSecurity\Admin\Settings;
+use Qodile\Security\Admin\Settings;
 
 /**
  * File integrity monitoring (FIM). Once a day a WP-Cron job walks the whole
@@ -30,28 +30,28 @@ use Xyo\WordpressSecurity\Admin\Settings;
 class Integrity
 {
     /** Daily WP-Cron hook. */
-    const CRON_HOOK = 'xyo_security_integrity_scan';
+    const CRON_HOOK = 'qodile_security_integrity_scan';
 
     /** Option holding the pending alert shown in wp-admin (null when clear). */
-    const ALERT_OPTION = 'xyo_security_integrity_alert';
+    const ALERT_OPTION = 'qodile_security_integrity_alert';
 
     /** Option holding a signature of the last executable-in-uploads finding. */
-    const UPLOADS_OPTION = 'xyo_security_integrity_uploads';
+    const UPLOADS_OPTION = 'qodile_security_integrity_uploads';
 
     /** Sub-directory of uploads/ holding the baseline manifest and the log. */
-    const DATA_DIR = 'xyo-security';
+    const DATA_DIR = 'qodile-security';
 
     /** Query arg used to dismiss the admin notice. */
-    const DISMISS_ARG = 'xyo_sec_fim_dismiss';
+    const DISMISS_ARG = 'qodile_sec_fim_dismiss';
 
     /** admin-post action backing the "Scan file integrity" button. */
-    const SCAN_ACTION = 'xyo_security_scan_now';
+    const SCAN_ACTION = 'qodile_security_scan_now';
 
     /** admin-post action backing the "Scan uploads" button. */
-    const SCAN_UPLOADS_ACTION = 'xyo_security_scan_uploads';
+    const SCAN_UPLOADS_ACTION = 'qodile_security_scan_uploads';
 
     /** Short-lived transient carrying the manual-scan result back to the page. */
-    const SCAN_RESULT = 'xyo_security_scan_result';
+    const SCAN_RESULT = 'qodile_security_scan_result';
 
     /** Hard cap on files listed in the e-mail / notice (the log keeps them all). */
     const REPORT_LIMIT = 200;
@@ -79,7 +79,7 @@ class Integrity
             add_action('admin_init', [self::class, 'handleDismiss']);
             add_action('admin_post_' . self::SCAN_ACTION, [self::class, 'handleScanNow']);
             add_action('admin_post_' . self::SCAN_UPLOADS_ACTION, [self::class, 'handleScanUploads']);
-            add_action('xyo_security_after_settings_form', [self::class, 'renderScanButton']);
+            add_action('qodile_security_after_settings_form', [self::class, 'renderScanButton']);
         }
     }
 
@@ -121,7 +121,7 @@ class Integrity
 
         $integrity = self::computeIntegrity();
         if ($integrity['status'] === 'empty') {
-            return ['status' => 'empty', 'summary' => __('Nothing to scan, or the data directory is not writable.', 'xyo-security')];
+            return ['status' => 'empty', 'summary' => __('Nothing to scan, or the data directory is not writable.', 'qodile-security')];
         }
 
         $threats = self::uploadsThreats();
@@ -165,7 +165,7 @@ class Integrity
 
         switch ($integrity['status']) {
             case 'empty':
-                return ['status' => 'empty', 'summary' => __('Nothing to scan, or the data directory is not writable.', 'xyo-security')];
+                return ['status' => 'empty', 'summary' => __('Nothing to scan, or the data directory is not writable.', 'qodile-security')];
             case 'baseline':
                 return ['status' => 'baseline', 'summary' => self::baselineSummary($integrity['total'])];
             case 'changed':
@@ -189,7 +189,7 @@ class Integrity
         self::rememberThreats($threats);
 
         if ($threats === []) {
-            return ['status' => 'clean', 'summary' => __('No executable files found in uploads.', 'xyo-security')];
+            return ['status' => 'clean', 'summary' => __('No executable files found in uploads.', 'qodile-security')];
         }
 
         $emptyDiff = ['added' => [], 'modified' => [], 'removed' => []];
@@ -235,7 +235,7 @@ class Integrity
     {
         return sprintf(
             /* translators: %s: number of files */
-            __('Baseline created: %s files recorded.', 'xyo-security'),
+            __('Baseline created: %s files recorded.', 'qodile-security'),
             number_format_i18n($total)
         );
     }
@@ -245,7 +245,7 @@ class Integrity
     {
         return sprintf(
             /* translators: %s: number of files */
-            __('No changes. %s files verified.', 'xyo-security'),
+            __('No changes. %s files verified.', 'qodile-security'),
             number_format_i18n($total)
         );
     }
@@ -619,8 +619,8 @@ class Integrity
         );
 
         $title = !empty($alert['threats'])
-            ? __('Xyo Security — executable file found in uploads', 'xyo-security')
-            : __('Xyo Security — file change detected', 'xyo-security');
+            ? __('Qodile Security — executable file found in uploads', 'qodile-security')
+            : __('Qodile Security — file change detected', 'qodile-security');
 
         printf(
             '<div class="notice notice-error"><p><strong>%s</strong> %s</p><p>%s %s</p></div>',
@@ -628,10 +628,10 @@ class Integrity
             esc_html($alert['summary']),
             sprintf(
                 /* translators: %s: path to the integrity log file */
-                esc_html__('Full report logged to %s.', 'xyo-security'),
+                esc_html__('Full report logged to %s.', 'qodile-security'),
                 '<code>' . esc_html(self::logPath()) . '</code>'
             ),
-            '<a href="' . esc_url($dismiss) . '">' . esc_html__('Dismiss', 'xyo-security') . '</a>'
+            '<a href="' . esc_url($dismiss) . '">' . esc_html__('Dismiss', 'qodile-security') . '</a>'
         );
     }
 
@@ -658,7 +658,7 @@ class Integrity
     public static function handleScanNow(): void
     {
         if (!current_user_can('manage_options')) {
-            wp_die(esc_html__('You are not allowed to do that.', 'xyo-security'));
+            wp_die(esc_html__('You are not allowed to do that.', 'qodile-security'));
         }
         check_admin_referer(self::SCAN_ACTION);
 
@@ -675,7 +675,7 @@ class Integrity
     public static function handleScanUploads(): void
     {
         if (!current_user_can('manage_options')) {
-            wp_die(esc_html__('You are not allowed to do that.', 'xyo-security'));
+            wp_die(esc_html__('You are not allowed to do that.', 'qodile-security'));
         }
         check_admin_referer(self::SCAN_UPLOADS_ACTION);
 
@@ -708,27 +708,27 @@ class Integrity
             );
         }
 
-        echo '<h2>' . esc_html__('File integrity', 'xyo-security') . '</h2>';
+        echo '<h2>' . esc_html__('File integrity', 'qodile-security') . '</h2>';
 
         // WP-Cron off → the queued event won't fire from page loads; warn so the
         // admin wires a real system cron or relies on the buttons below.
         if (defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) {
             printf(
                 '<div class="notice notice-warning inline"><p>%s</p></div>',
-                esc_html__('WP-Cron is disabled (DISABLE_WP_CRON). The daily scan will only run if a system cron triggers wp-cron.php — otherwise use the buttons below.', 'xyo-security')
+                esc_html__('WP-Cron is disabled (DISABLE_WP_CRON). The daily scan will only run if a system cron triggers wp-cron.php — otherwise use the buttons below.', 'qodile-security')
             );
         }
 
         self::renderScanForm(
             self::SCAN_ACTION,
-            __('Scan file integrity', 'xyo-security'),
-            __('Hash core, plugins, mu-plugins and the theme and compare to the baseline. Heavier scan; also records the baseline on first run.', 'xyo-security')
+            __('Scan file integrity', 'qodile-security'),
+            __('Hash core, plugins, mu-plugins and the theme and compare to the baseline. Heavier scan; also records the baseline on first run.', 'qodile-security')
         );
 
         self::renderScanForm(
             self::SCAN_UPLOADS_ACTION,
-            __('Scan uploads', 'xyo-security'),
-            __('List the uploads folder and flag any executable code (PHP/JS) — a likely web shell. Quick, read-only check.', 'xyo-security')
+            __('Scan uploads', 'qodile-security'),
+            __('List the uploads folder and flag any executable code (PHP/JS) — a likely web shell. Quick, read-only check.', 'qodile-security')
         );
     }
 

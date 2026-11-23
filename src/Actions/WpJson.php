@@ -1,17 +1,17 @@
 <?php
 
-namespace Xyo\WordpressSecurity\Actions;
+namespace Qodile\Security\Actions;
 
 use WP_Error;
-use Xyo\WordpressSecurity\Admin\Settings;
+use Qodile\Security\Admin\Settings;
 
 class WpJson
 {
     /**
      * Route prefixes always kept public, regardless of admin settings — oEmbed
      * must stay reachable for WordPress embeds to work. The rest of the public
-     * whitelist is admin-configurable (Settings → Xyo Security) and merged on
-     * top; extend programmatically via the 'xyo_security_public_rest_prefixes'
+     * whitelist is admin-configurable (Settings → Qodile Security) and merged on
+     * top; extend programmatically via the 'qodile_security_public_rest_prefixes'
      * filter.
      */
     const FORCED_PREFIXES = ['/oembed/'];
@@ -35,8 +35,8 @@ class WpJson
         }
 
         $message = apply_filters(
-            'xyo_security_rest_api_error',
-            __('REST API restricted to authenticated users.', 'xyo-security')
+            'qodile_security_rest_api_error',
+            __('REST API restricted to authenticated users.', 'qodile-security')
         );
 
         return new WP_Error('rest_login_required', $message, ['status' => rest_authorization_required_code()]);
@@ -70,7 +70,7 @@ class WpJson
     private static function publicPrefixes(): array
     {
         $prefixes = array_merge(self::FORCED_PREFIXES, Settings::restPublicPrefixes());
-        $prefixes = apply_filters('xyo_security_public_rest_prefixes', $prefixes);
+        $prefixes = apply_filters('qodile_security_public_rest_prefixes', $prefixes);
 
         return array_values(array_unique(array_filter((array) $prefixes)));
     }

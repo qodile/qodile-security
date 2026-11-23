@@ -1,4 +1,4 @@
-=== Xyo Security ===
+=== Qodile Security ===
 Contributors: xyo
 Tags: security, hardening, rest api, headers, file integrity
 Requires at least: 5.0
@@ -12,8 +12,8 @@ Clean and harden WordPress: trim <head> cruft, send hardened headers, lock the R
 
 == Description ==
 
-Xyo Security bundles a set of independent hardening features behind a single
-settings screen (Settings > Xyo Security). Each one is a simple on/off toggle,
+Qodile Security bundles a set of independent hardening features behind a single
+settings screen (Settings > Qodile Security). Each one is a simple on/off toggle,
 so you only run what you need.
 
 Features:
@@ -41,7 +41,7 @@ Bedrock. The uploads directory is always excluded.
 The plugin does not collect or transmit any visitor data.
 
 * File integrity monitoring stores a baseline manifest and a log file in
-  `wp-content/uploads/xyo-security/` (protected from direct web access) and, when
+  `wp-content/uploads/qodile-security/` (protected from direct web access) and, when
   a change is detected, sends a report e-mail to the site admin address. Both
   only contain file paths and hashes from your own installation.
 * No data is sent to any third party.
@@ -49,7 +49,7 @@ The plugin does not collect or transmit any visitor data.
 == Installation ==
 
 1. Upload the plugin folder to `wp-content/plugins/` and activate it.
-2. Go to Settings > Xyo Security and toggle the features you want.
+2. Go to Settings > Qodile Security and toggle the features you want.
 3. For file integrity monitoring, click "Scan now" to record the initial
    baseline, or wait for the first daily run.
 
@@ -78,5 +78,5 @@ button. The settings screen warns you when this is the case.
 == Upgrade Notice ==
 
 = 3.0.0 =
-All features default to on. Review Settings > Xyo Security after upgrading —
+All features default to on. Review Settings > Qodile Security after upgrading —
 locking the REST API may affect anonymous API access.

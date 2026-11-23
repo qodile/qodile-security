@@ -1,6 +1,6 @@
 <?php
 
-namespace Xyo\WordpressSecurity\Actions;
+namespace Qodile\Security\Actions;
 
 class Header
 {

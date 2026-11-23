@@ -1,48 +1,48 @@
 <?php
 /*
-Plugin Name: Xyo Security
-Plugin URI: https://xyo.dev/plugins/securityq
+Plugin Name: Qodile Security
+Plugin URI: https://qodile.com/plugins/security
 Description: Secure and clean your WordPress: trim head cruft, harden headers, lock the REST API (with a public-route whitelist) and tame Yoast.
 Version: 3.0.0
 Author: Patrick Petit (Xyo)
 Author URI: https://xyo.dev/
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Text Domain: xyo-security
+Text Domain: qodile-security
 Requires at least: 5.0
 Requires PHP: 7.4
 */
 
-use Xyo\WordpressSecurity\Actions\Cleanup;
-use Xyo\WordpressSecurity\Actions\Footer;
-use Xyo\WordpressSecurity\Actions\Header;
-use Xyo\WordpressSecurity\Actions\Integrity;
-use Xyo\WordpressSecurity\Actions\Security;
-use Xyo\WordpressSecurity\Actions\WpJson;
-use Xyo\WordpressSecurity\Actions\Yoast;
-use Xyo\WordpressSecurity\Admin\Settings;
+use Qodile\Security\Actions\Cleanup;
+use Qodile\Security\Actions\Footer;
+use Qodile\Security\Actions\Header;
+use Qodile\Security\Actions\Integrity;
+use Qodile\Security\Actions\Security;
+use Qodile\Security\Actions\WpJson;
+use Qodile\Security\Actions\Yoast;
+use Qodile\Security\Admin\Settings;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-define('XYO_SECURITY_VERSION', '3.0.0');
-define('XYO_SECURITY_MINIMUM_WP_VERSION', '^5.0');
-define('XYO_SECURITY_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('QODILE_SECURITY_VERSION', '3.0.0');
+define('QODILE_SECURITY_MINIMUM_WP_VERSION', '^5.0');
+define('QODILE_SECURITY_PLUGIN_DIR', plugin_dir_path(__FILE__));
 
 /**
- * Minimal PSR-4 autoloader: Xyo\WordpressSecurity\ => src/. No Composer/vendor
+ * Minimal PSR-4 autoloader: Qodile\Security\ => src/. No Composer/vendor
  * needed — the plugin ships no external dependencies, so a ~10-line loader keeps
  * it fully self-contained with zero build step.
  */
 spl_autoload_register(function ($class) {
-    $prefix = 'Xyo\\WordpressSecurity\\';
+    $prefix = 'Qodile\\Security\\';
     $len = strlen($prefix);
     if (strncmp($class, $prefix, $len) !== 0) {
         return;
     }
 
-    $file = XYO_SECURITY_PLUGIN_DIR . 'src/' . str_replace('\\', '/', substr($class, $len)) . '.php';
+    $file = QODILE_SECURITY_PLUGIN_DIR . 'src/' . str_replace('\\', '/', substr($class, $len)) . '.php';
     if (is_file($file)) {
         require $file;
     }
@@ -52,7 +52,7 @@ if (!function_exists('add_action')) {
     exit;
 }
 
-// Admin settings screen (Settings → Xyo Security) + "Settings" plugin link.
+// Admin settings screen (Settings → Qodile Security) + "Settings" plugin link.
 add_action('admin_menu', [Settings::class, 'registerMenu']);
 add_action('admin_init', [Settings::class, 'registerSettings']);
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), [Settings::class, 'actionLinks']);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Xyo\WordpressSecurity\Actions;
+namespace Qodile\Security\Actions;
 
 class Security
 {
@@ -8,7 +8,7 @@ class Security
     {
         // Generic login error → no username/password enumeration.
         add_filter('login_errors', function () {
-            return __('Authentication failed.', 'xyo-security');
+            return __('Authentication failed.', 'qodile-security');
         });
     }
 }
